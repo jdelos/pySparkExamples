@@ -4,6 +4,17 @@ from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 
 
+
+# Function to create and setup a new StreamingContext
+def functionToCreateContext():
+    sc = SparkContext(...)   # new context
+    ssc = new StreamingContext(...)
+    lines = ssc.socketTextStream(...) # create DStreams
+    ...
+    ssc.checkpoint(checkpointDirectory)   # set checkpoint directory
+    return ssc
+
+
 # Create a local StreamingContext with two working thread and batch interval of 1 second
 sc = SparkContext("local[2]", "NetworkWordCount")
 ssc = StreamingContext(sc, 1)
