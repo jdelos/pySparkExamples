@@ -1,1 +1,0 @@
-SPARK_MAJOR_VERSION is set to 1, using Spark
