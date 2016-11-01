@@ -16,20 +16,28 @@
 #
 
 """
- Counts words in text encoded with UTF8 received from the network every second.
+ Counts words in text encoded with UTF8 received from the network every second using a 
+ defined time window and interval.
 
- Usage: recoverable_network_wordcount.py <hostname> <port> <checkpoint-directory> <output-file>
+ Usage: recoverable_network_wordcount.py <hostname> <port> <checkpoint-directory> <window-length>
+                                         <window-interval> <regular-expression> 
+
    <hostname> and <port> describe the TCP server that Spark Streaming would connect to receive
    data. <checkpoint-directory> directory to HDFS-compatible file system which checkpoint data
-   <output-file> file to which the word counts will be appended
+   <window-length> is the lenght of the window that the streaming msg are processed
+   <window-int> is the interval that the window is refreshed
+   <regular-expression> is a python compatible regex used to filter the msgs
+ 
 
  To run this on your local machine, you need to first run a Netcat server
     `$ nc -lk 9999`
+ To generate some more intense trafic you can use the /var/log/syslog by running 
+    `$ tail -f /var/log/syslog | nc -lk 9999`
 
  and then run the example
-    `$ bin/spark-submit examples/src/main/python/streaming/recoverable_network_wordcount.py \
-        localhost 9999 ~/checkpoint/ ~/out`
-
+    `$ bin/spark-submit --master local[2] examples/src/main/python/streaming/recoverable_network_wordcount.py \
+        localhost 9999 ~/checkpoint/ 30 2 '[A-Z]+'`
+ 
  If the directory ~/checkpoint/ does not exist (e.g. running for the first time), it will create
  a new StreamingContext (will print "Creating new context" to the console). Otherwise, if
  checkpoint data exists in ~/checkpoint/, then it will create StreamingContext from
