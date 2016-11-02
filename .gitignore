@@ -4,6 +4,7 @@
 *.*~
 *.html
 
+.spyder*
 ## GitHub proposal
 
 # Byte-compiled / optimized / DLL files
