@@ -30,6 +30,7 @@ from __future__ import print_function
 from pyspark import SparkContext, HiveContext
 
 if __name__ == "__main__":
+    print("Creating spark context")
     sc = SparkContext(master="yarn-client",appName="PythonStreamingWindowedWC_Cluster")
     sqlContex = HiveContext(sc)
     sc.setLogLevel('ERROR')
