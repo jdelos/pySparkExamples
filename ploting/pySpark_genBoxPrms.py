@@ -36,8 +36,8 @@ if __name__ == "__main__":
     sc.setLogLevel('ERROR')
 
     #Add python module
-    sc.addPyFile('boxParams.py')
-    from boxParams import boxPerKey
+    sc.addPyFile('boxParms.py')
+    from boxParms import boxPerKey
 
     df = sqlContext.sql("SELECT app_str, pm FROM postnl_struct.srvchecks_mem")
     df_s1 = df.sample(False,0.001,25) #Sample the data
