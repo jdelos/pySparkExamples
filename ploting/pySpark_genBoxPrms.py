@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 pySpark example how to use the boxParms spark module
 
@@ -12,8 +11,6 @@ Run this example by executing this line:
 
 
 from pyspark import SparkContext, HiveContext
-
-
 
 if __name__=="__main__":
     sc = SparkContext(master="yarn-client",appName="PythonStreamingWindowedWC_Cluster")
