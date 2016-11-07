@@ -32,7 +32,7 @@ from pyspark import SparkContext, HiveContext
 if __name__ == "__main__":
     print("Creating spark context")
     sc = SparkContext(master="yarn-client",appName="PythonStreamingWindowedWC_Cluster")
-    sqlContex = HiveContext(sc)
+    sqlCotntex = HiveContext(sc)
     sc.setLogLevel('ERROR')
 
     #Add python module
