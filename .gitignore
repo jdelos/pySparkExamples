@@ -4,7 +4,7 @@
 *.*~
 *.html
 *.xls
-
+*.csv
 .spyder*
 ## GitHub proposal
 
