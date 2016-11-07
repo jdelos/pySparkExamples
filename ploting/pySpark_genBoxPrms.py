@@ -29,7 +29,7 @@ Run this example by executing this line:
 from __future__ import print_function
 from pyspark import SparkContext, HiveContext
 
-if __name__=="__main__":
+if __name__ == "__main__":
     sc = SparkContext(master="yarn-client",appName="PythonStreamingWindowedWC_Cluster")
     sqlContex = HiveContext(sc)
     sc.setLogLevel('ERROR')
