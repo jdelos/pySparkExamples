@@ -3,6 +3,7 @@
 .*.swp
 *.*~
 *.html
+*.xls
 
 .spyder*
 ## GitHub proposal
