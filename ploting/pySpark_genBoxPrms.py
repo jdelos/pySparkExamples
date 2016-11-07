@@ -41,5 +41,7 @@ if __name__ == "__main__":
 
     df = sqlContext.sql("SELECT app_str, pm FROM postnl_struct.srvchecks_mem")
     df_s1 = df.sample(False,0.001,25) #Sample the data
-    box_prms = boxPerKey(df_s1)
+    box_prms = boxPerKey(df_s1,0,1)
     box_prms.show()
+
+
