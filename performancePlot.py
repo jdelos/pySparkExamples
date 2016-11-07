@@ -20,7 +20,7 @@ Created on Wed Nov 02 20:26:49 2016
 
 
 #Import modules 
-from bokeh.plotting import figure, output_file, show
+from bokeh.plotting import figure, output_file, show, output_notebook
 from bokeh.io import push_notebook
 from bokeh.layouts import column, row, gridplot
 import pandas as pd
@@ -29,7 +29,7 @@ from numpy import pi
 
 
 
-def addBoxPlot(table,plt):
+#def addBoxPlot(table,plt):
     
 
 def plotBarBoxPlot(table,plt_size,tstr):
@@ -51,8 +51,7 @@ def plotBarBoxPlot(table,plt_size,tstr):
                
     """
     #Test if categories are strings 
-    if type(table.iloc[0,0]) = str:
-        
+    if type(table.iloc[0,0]) == str:
         p = figure(plot_width=plt_size[0],
                plot_height=plt_size[1],
                x_range=tmem['SrvNameInst'].tolist(),
@@ -87,28 +86,38 @@ def plotBarBoxPlot(table,plt_size,tstr):
                line_width=1,line_color="black",line_alpha=1,
                fill_color='green',fill_alpha=0.2)
     #Mark the median   
-    p.vbar(x=[cat],width=0.75,bottom=q2,top=q2,
+    p.vbar(x=x_cats,width=0.75,bottom=q2,top=q2,
                line_width=1,line_color="black",line_alpha=1,
                fill_color='green',fill_alpha=0.2)
+    
     #Mark the bottom of the segment            
-    p.vbar(x=[cat],width=0.75,bottom=qmin,top=qmin,
+    p.vbar(x=x_cats,width=0.5,bottom=qmin,top=qmin,
                line_width=1,line_color="black",line_alpha=1,
                fill_color='black',fill_alpha=0.2)
     #Mark the top of the segment    
-    p.vbar(x=[cat],width=0.75,bottom=qmax,top=qmax,
+    p.vbar(x=x_cats,width=0.5,bottom=qmax,top=qmax,
                line_width=1,line_color="black",line_alpha=1,
                fill_color='black',fill_alpha=0.2)
-    #Mark the            
-    p.line(x=[cat,cat],y=[float(sel['Q3']/1024),float(sel['Qmax']/1024)],
-               line_width=1,line_color='black')
-               
-    p.line(x=[cat,cat],y=[float(sel['Qmin']/1024),float(sel['Q1']/1024)],
-               line_width=1,line_color='black')
-        olStr = sel['OL'].tolist()[0]
-        if len(olStr) > 2:
-            ol_points = np.array(map(float,olStr[1:-1].split(',')))/1024
-            cats = [cat] * len(ol_points)
-            p.asterisk(x=cats,y=ol_points,color='red')
+    
+    #Generate the multiplot lines for the whiskers
+    xs_cats = [ [x_cat,x_cat] for x_cat in x_cats ]           
+    ys_whsk_top = [ [  q3[i], qmax[i]] for i in range(0,len(q3))] 
+    ys_whsk_bot = [ [qmin[i],   q1[i]] for i in range(0,len(q3))] 
+      
+    p.multi_line(xs=xs_cats,ys=ys_whsk_top,
+               line_width=1,color='black')
+    p.multi_line(xs=xs_cats,ys=ys_whsk_bot,
+                 line_width=1,color='black')
+                 
+    #Generate the lists to plot all the outliners
+    ol_pts=[]
+    ol_cats=[]
+    idx=0
+    for ol_points in OL:
+        if ol_points:
+            ol_pts = ol_pts+ol_points
+            ol_cats = ol_cats+[x_cats[idx]]*len(ol_points)
+    p.asterisk(x=ol_cats,y=ol_pts,color='red')
     return p     
 
 #load the services memory information it contains the average 
@@ -151,29 +160,29 @@ tdata_frmt = tdata[['SrvNameInst','tpmGb','avgGb','Q1','Q2','Q3','IQR','Qmax','Q
 lyt1=[[400,400], [800,400],[800,400]]        
 
 output_file("boxplot_1.html", title="boxplot.py example")
-p1 = plotSubpot(tdata_frmt[tmem['type']>2],lyt1[0],'Biggest VM')
+p1 = plotBarBoxPlot(tdata_frmt[tmem['type']>2],lyt1[0],'Biggest VM')
 
 show(p1)
 
 output_file("boxplot_2.html", title="boxplot.py example")
 
-p2 = plotSubpot(tdata_frmt[tmem['type']==2].head(n=9),lyt1[1],'14 Gb VM')
-p3 = plotSubpot(tdata_frmt[tmem['type']==2].tail(n=8),lyt1[2],'14 Gb VM')
+p2 = plotBarBoxPlot(tdata_frmt[tmem['type']==2].head(n=9),lyt1[1],'14 Gb VM')
+p3 = plotBarBoxPlot(tdata_frmt[tmem['type']==2].tail(n=8),lyt1[2],'14 Gb VM')
 
 show(column(p2,p3))     
 
 
 output_file("boxplot_3.html", title="boxplot.py example")
 
-p4 = plotSubpot(tdata_frmt[tmem['type']==1].head(n=11),lyt1[1],'7 Gb VM')
-p5 = plotSubpot(tdata_frmt[tmem['type']==1].tail(n=10),lyt1[2],'7 Gb VM')
+p4 = plotBarBoxPlot(tdata_frmt[tmem['type']==1].head(n=11),lyt1[1],'7 Gb VM')
+p5 = plotBarBoxPlot(tdata_frmt[tmem['type']==1].tail(n=10),lyt1[2],'7 Gb VM')
 
 show(column(p4,p5))  
 
 output_file("boxplot_4.html", title="boxplot.py example")
 
-p6 = plotSubpot(tdata_frmt[tmem['type']==0].head(n=22),lyt1[1],'3.5 Gb VM')
-p7 = plotSubpot(tdata_frmt[tmem['type']==0].tail(n=22),lyt1[2],'3.5 Gb VM')
+p6 = plotBarBoxPlot(tdata_frmt[tmem['type']==0].head(n=22),lyt1[1],'3.5 Gb VM')
+p7 = plotBarBoxPlot(tdata_frmt[tmem['type']==0].tail(n=22),lyt1[2],'3.5 Gb VM')
 
 show(column(p6,p7))  
 
