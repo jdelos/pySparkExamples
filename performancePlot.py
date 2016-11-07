@@ -50,18 +50,6 @@ def plotBarBoxPlot(table,plt_size,tstr):
        OL      --> String list containing the outliners values       
                
     """
-    #Test if categories are strings 
-    if type(table.iloc[0,0]) == str:
-        p = figure(plot_width=plt_size[0],
-               plot_height=plt_size[1],
-               x_range=tmem['SrvNameInst'].tolist(),
-               title=tstr)
-        #In such a case string will be tilted for better reading       
-        p.xaxis.major_label_orientation = pi/4
-    else:
-        p = figure(plot_width=plt_size[0],
-               plot_height=plt_size[1],
-               title=tstr)
 
     #Parse input table to variables
     x_cats = table.iloc[:,0].tolist()
@@ -75,6 +63,18 @@ def plotBarBoxPlot(table,plt_size,tstr):
     qmin   = table.iloc[:,8].tolist()
     OL     = table.iloc[:,9].tolist()
 
+    # Test if categories are strings
+    if type(table.iloc[0, 0]) == str:
+        p = figure(plot_width=plt_size[0],
+                   plot_height=plt_size[1],
+                   x_range=x_cats,
+                   title=tstr)
+        # In such a case string will be tilted for better reading
+        p.xaxis.major_label_orientation = pi / 4
+    else:
+        p = figure(plot_width=plt_size[0],
+                   plot_height=plt_size[1],
+                   title=tstr)
     
     #Plot first bar plot       
     p.vbar(x=x_cats, width=0.5, bottom=0, top=y_bar1 )
@@ -138,7 +138,7 @@ lst_prsd = [None] * len(boxPrms['OL'])
 i=0
 for val in boxPrms['OL']:
     if len(val) > 2:
-            lst_prsd[i] = np.array(map(float,val[1:-1].split(',')))/1024
+            lst_prsd[i] = (np.array(map(float,val[1:-1].split(',')))/1024).tolist()
     i=i+1
 #The parsed result is stored in the OL column   
 boxPrms['OL'] = lst_prsd
@@ -160,31 +160,31 @@ tdata_frmt = tdata[['SrvNameInst','tpmGb','avgGb','Q1','Q2','Q3','IQR','Qmax','Q
 lyt1=[[400,400], [800,400],[800,400]]        
 
 output_file("boxplot_1.html", title="boxplot.py example")
-p1 = plotBarBoxPlot(tdata_frmt[tmem['type']>2],lyt1[0],'Biggest VM')
+p1 = plotBarBoxPlot(tdata_frmt[tmem['type']>3],lyt1[0],'Biggest VM')
 
 show(p1)
 
 output_file("boxplot_2.html", title="boxplot.py example")
 
-p2 = plotBarBoxPlot(tdata_frmt[tmem['type']==2].head(n=9),lyt1[1],'14 Gb VM')
-p3 = plotBarBoxPlot(tdata_frmt[tmem['type']==2].tail(n=8),lyt1[2],'14 Gb VM')
+p2 = plotBarBoxPlot(tdata_frmt[tmem['type']==3].head(n=8),lyt1[1],'14 Gb VM')
+p3 = plotBarBoxPlot(tdata_frmt[tmem['type']==3].tail(n=8),lyt1[2],'14 Gb VM')
 
-show(column(p2,p3))     
+show(column(p2,p3))
 
 
 output_file("boxplot_3.html", title="boxplot.py example")
 
-p4 = plotBarBoxPlot(tdata_frmt[tmem['type']==1].head(n=11),lyt1[1],'7 Gb VM')
-p5 = plotBarBoxPlot(tdata_frmt[tmem['type']==1].tail(n=10),lyt1[2],'7 Gb VM')
+p4 = plotBarBoxPlot(tdata_frmt[tmem['type']==2].head(n=11),lyt1[1],'7 Gb VM')
+p5 = plotBarBoxPlot(tdata_frmt[tmem['type']==2].tail(n=10),lyt1[2],'7 Gb VM')
 
-show(column(p4,p5))  
+show(column(p4,p5))
 
 output_file("boxplot_4.html", title="boxplot.py example")
 
-p6 = plotBarBoxPlot(tdata_frmt[tmem['type']==0].head(n=22),lyt1[1],'3.5 Gb VM')
-p7 = plotBarBoxPlot(tdata_frmt[tmem['type']==0].tail(n=22),lyt1[2],'3.5 Gb VM')
+p6 = plotBarBoxPlot(tdata_frmt[tmem['type']==1],lyt1[1],'3.5 Gb VM')
+p7 = plotBarBoxPlot(tdata_frmt[tmem['type']==0],lyt1[2],'3.5 Gb VM')
 
-show(column(p6,p7))  
+show(column(p6,p7))
 
 
 
