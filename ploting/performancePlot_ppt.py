@@ -67,9 +67,15 @@ table.iloc[:,0] = ['B2B','PROD','PAK','AGT']
 #Plot the big VM
 output_file("boxplot_1.html", title="boxplot.py example")
 p1 = plotBarBoxPlot(table,lyt1[0],'Biggest VM',
-                    bar_color=['#66CDAA','#7ebc92'],
-                    box_width=0.25)
+                    plot_ol     = False,
+                    bar_color   = ['#66CDAA','#329a77'],
+                    box_width   = 0.25,
+                    ol_mk_alpha = 0.3,
+                    ol_mk_color = 'black',
+                    ol_mk_size  = 3)
 p1.xaxis.axis_label = "Service name"
 p1.yaxis.axis_label = "memory [GiB]"
+#p1.background_fill_color = "withe"
+#p1.background_fill_alpha = 0.3
 show(p1)
 

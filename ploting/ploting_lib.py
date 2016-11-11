@@ -17,7 +17,8 @@ from numpy import pi
 from math import ceil
 
 def plotHBarOver(xs,ys_bot,ys_top,width=0.5,color=None,line_width=1,alpha=None,
-                 plt=None,plt_size=[400,400],title=None):
+                 plt=None,plt_size=[400,400],title=None,legend=['Total','Mean'],
+                 ):
     """
      Function returns a figure object of an overlay of horizontal bar plot.
      Input arguments:
@@ -104,17 +105,26 @@ def plotHBarOver(xs,ys_bot,ys_top,width=0.5,color=None,line_width=1,alpha=None,
     for idx in range(0,n_layers):
         # Plot first bar plot
         plt.vbar(x=xs, width=width[idx],bottom=ys_bot[idx], top=ys_top[idx],
-                color=color[idx],line_width=line_width[idx],alpha=alpha[idx])
+                color=color[idx],line_width=line_width[idx],alpha=alpha[idx],
+                line_alpha=0,legend=legend[idx])
 
     return plt
 
 
 def plotBoxPlot(x_cats,q1,q2,q3,qmin,qmax,OL,
-                 box_alpha_fill=1,box_color_fill='green',
-                 box_line_width=1, box_line_color='black',
-                 box_width=0.5,
-                 wsk_color='black', wsk_line_width=1, wsk_limits_width=0.25,
-                 ol_point_color='red',
+                 plot_ol=False,
+                 box_alpha_fill=1,
+                 box_line_width=1.5, 
+                 box_line_color='#555555',
+                 box_width=0.35,
+                 wsk_color='#555555', 
+                 wsk_line_width=1.5, 
+                 wsk_limits_width=0.25,
+                 box_top_fill='#fbaf5d',
+                 box_low_fill='#fff568',
+                 ol_mk_alpha=0.3,
+                 ol_mk_color='black',
+                 ol_mk_size=10,
                  plt=None,plt_size=[400,400],title=None):
     """
      Function returns a figure object of an overlay of horizontal bar plot.
@@ -131,7 +141,9 @@ def plotBoxPlot(x_cats,q1,q2,q3,qmin,qmax,OL,
 
         Box design arguments:
         box_alpha_fill --> Value for the box filling. Default: 1 (opaque)
-        box_color_fill --> Color used to fill the box. Default green.
+        box_low_fill  --> Lower box (Q1-Q2) fill color. Default Yellow 
+        box_top_fill -->  Top box (Q2-Q3) fill color. Default Light orange 
+                           Color used to fill the box. Default green.
                            Color can be defined by the standard CSS HTML color name of HTML code.
         box_line_width --> Line with for the box. Default 1
         box_line_width --> Color for the box lines. Default 'black'
@@ -201,21 +213,39 @@ def plotBoxPlot(x_cats,q1,q2,q3,qmin,qmax,OL,
                        x_range=xs,
                        title=title)
             # In such a case string will be tilted for better reading
-            plt.xaxis.major_label_orientation = pi / 4
+            plt.xaxis.major_label_orientation = pi / 6
         else:
             plt = figure(plot_width=plt_size[0],
                        plot_height=plt_size[1],
                        title=title)
 
+    if plot_ol == True:
+        #Generate the lists to plot all the outliners
+        ol_pts = []
+        ol_cats = []
+        idx = 0
+        for ol_points in OL:
+            if ol_points:
+                ol_pts = ol_pts + ol_points
+                ol_cats = ol_cats + [x_cats[idx]] * len(ol_points)
+            idx += 1
+        plt.scatter(x=ol_cats, y=ol_pts,
+                    marker='o',
+                    alpha=ol_mk_alpha,
+                    fill_color=ol_mk_color,
+                    size=ol_mk_size,
+                    line_alpha=0)
+
     #Generate the main box
-    # Create a box between Q1 and Q3
-    plt.vbar(x=x_cats, width=box_width, bottom=q1, top=q3,
+    # Create the lower box between Q1 and Q2
+    plt.vbar(x=x_cats, width=box_width, bottom=q1, top=q2,
              line_width=box_line_width, line_color=box_line_color,
-             fill_color=box_color_fill, fill_alpha=box_alpha_fill)
+             fill_color=box_low_fill, fill_alpha=box_alpha_fill)
+
     # Mark the median
-    plt.vbar(x=x_cats, width=box_width, bottom=q2, top=q2,
+    plt.vbar(x=x_cats, width=box_width, bottom=q2, top=q3,
              line_width=box_line_width, line_color=box_line_color,
-             fill_color=box_color_fill, fill_alpha=box_alpha_fill)
+             fill_color=box_top_fill, fill_alpha=box_alpha_fill)
 
     # Genertare the whiskers
     # Mark the bottom limit
@@ -237,21 +267,20 @@ def plotBoxPlot(x_cats,q1,q2,q3,qmin,qmax,OL,
     plt.multi_line(xs=xs_cats, ys=ys_whsk_bot,
                    line_width=wsk_line_width, color=wsk_color)
 
-    # Generate the lists to plot all the outliners
-    ol_pts = []
-    ol_cats = []
-    idx = 0
-    for ol_points in OL:
-        if ol_points:
-            ol_pts = ol_pts + ol_points
-            ol_cats = ol_cats + [x_cats[idx]] * len(ol_points)
-    plt.asterisk(x=ol_cats, y=ol_pts, color=ol_point_color)
+
 
     # Return the figure object
     return plt
 
 
-def plotBarBoxPlot(table,plt_size,tstr,plt=None):
+def plotBarBoxPlot(table,plt_size,tstr,plt=None,bar_color=['#90EE90','#20B2AA'],box_fill=['Green'],
+                         plot_ol = False,
+                         box_alpha_fill=1,
+                         box_width=0.5,
+                         wsk_limits_width=0.15,
+                         ol_mk_alpha=0.3,
+                         ol_mk_color='black',
+                         ol_mk_size=10):
     """
      This function takes a pandasdf with the following schema:
        CAT | MAX_VAL | AVG  | Q1 | Q2 | Q3| ICQ |Qmax | Qmin | [OL]
@@ -266,7 +295,8 @@ def plotBarBoxPlot(table,plt_size,tstr,plt=None):
        Q3      --> Third quartile, 75% of the data is blow this value.
        Qmin    --> Minumum value after removing the outliners
        Qmax    --> Maximum value after removing the outliners
-       OL      --> String list containing the outliners values       
+       OL      --> String list containing the outliners values    
+       bar_color --> 
                
     """
 
@@ -291,7 +321,7 @@ def plotBarBoxPlot(table,plt_size,tstr,plt=None):
                        x_range=x_cats,
                        title=tstr)
             # In such a case string will be tilted for better reading
-            plt.xaxis.major_label_orientation = pi / 4
+            plt.xaxis.major_label_orientation = pi / 6
         else:
             plt = figure(plot_width=plt_size[0],
                        plot_height=plt_size[1],
@@ -301,10 +331,15 @@ def plotBarBoxPlot(table,plt_size,tstr,plt=None):
     #Generate the overlay boxPlot
     plt = plotHBarOver(plt=plt, #Pass the figure handler to add the plots
                        xs=x_cats,width=0.5,ys_bot=[[0]*len(x_cats),[0]*len(x_cats)],
-                       ys_top=[y_bar1,y_bar2],alpha=[1, 0.7],color=['#1F77B4','#001234'])
+                       ys_top=[y_bar1,y_bar2],alpha=[1, 0.7],color=bar_color)
 
     #Create
     plt = plotBoxPlot(plt=plt, #Pass the figure handler to add the plots
                       x_cats=x_cats, q1=q1,q2=q2,q3=q3,qmin=qmin,qmax=qmax,OL=OL,
-                      box_width=0.75,box_alpha_fill=0.2,wsk_limits_width=0.3)
+                      plot_ol=plot_ol,
+                      box_width=box_width,box_alpha_fill=box_alpha_fill,
+                      wsk_limits_width=wsk_limits_width,
+                      ol_mk_alpha=ol_mk_alpha,
+                      ol_mk_color=ol_mk_color,
+                      ol_mk_size=ol_mk_size)
     return plt

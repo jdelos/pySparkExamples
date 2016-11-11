@@ -59,11 +59,15 @@ tdata_frmt = tdata[['SrvNameInst','tpmGb','avgGb','Q1','Q2','Q3','IQR','Qmax','Q
 
 
 #Define two sizes for the plots
-lyt1=[[400,400], [800,400]]        
+lyt1=[[400,500], [800,400]]        
 
 #Plot the big VM
 output_file("boxplot_1.html", title="boxplot.py example")
-p1 = plotBarBoxPlot(tdata_frmt[tmem['type']>3],lyt1[0],'Biggest VM')
+p1 = plotBarBoxPlot(tdata_frmt[tmem['type']>3],lyt1[0],'Biggest VM',
+                    bar_color=['#66CDAA','#20B2AA'],box_fill=['#B0C4DE'],
+                    box_width=0.5)
+p1.xaxis.axis_label = "Service name"
+p1.yaxis.axis_label = "memory [GiB]"
 show(p1)
 
 
