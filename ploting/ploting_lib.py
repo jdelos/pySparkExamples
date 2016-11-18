@@ -273,7 +273,7 @@ def plotBoxPlot(x_cats,q1,q2,q3,qmin,qmax,OL,
     return plt
 
 
-def plotBarBoxPlot(table,plt_size,tstr,plt=None,bar_color=['#90EE90','#20B2AA'],box_fill=['Green'],
+def plotBarBoxPlot(table,plt_size,tstr,plt=None,bar_color=['#90EE90','#20B2AA'],
                          plot_ol = False,
                          box_alpha_fill=1,
                          box_width=0.5,
